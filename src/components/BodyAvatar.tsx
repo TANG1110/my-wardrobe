@@ -14,9 +14,11 @@ export default function BodyAvatar({
     <div className="relative w-full overflow-hidden rounded-2xl bg-muted">
       <Image src={image} alt="人物形象" className="w-full" />
       {overlay && (
-        <Image
+        <img
           src={overlay}
           alt="试穿效果"
+          loading="eager"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-contain"
         />
       )}

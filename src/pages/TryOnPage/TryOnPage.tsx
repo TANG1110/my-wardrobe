@@ -7,6 +7,7 @@ import { useBodyParams } from '@/hooks/useBodyParams';
 import { useOutfits } from '@/hooks/useOutfits';
 import { useDailyLogs, todayStr } from '@/hooks/useDailyLogs';
 import { mockTryOn } from '@/lib/mock-ai';
+import { BASE } from '@/lib/base';
 import { evaluateFit } from '@/lib/fit-rules';
 import { bodyImage } from '@/data/body';
 import { MAJOR_LABEL, MAJOR_ORDER } from '@/data/wardrobe';
@@ -18,6 +19,13 @@ import { toast } from 'sonner';
 import { CalendarCheck, Check, Save, Sparkles, UserRound, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { IClothing, Major } from '@/data/types';
+
+// 预生成的搭配效果图：key = 选中衣物 id 排序后用 | 拼接（与 runTryOn 计算一致）
+const TRYON_RESULTS: Record<string, string> = {
+  'mock_coat_camel|mock_jeans_blue|mock_tshirt_white': `${BASE}images/tryons/tryon-tshirt-jeans-coat.png`,
+  'mock_hoodie_gray|mock_jeans_blue|mock_shoes_white': `${BASE}images/tryons/tryon-hoodie-jeans-shoes.png`,
+  'mock_dress_black|mock_shoes_white': `${BASE}images/tryons/tryon-dress-shoes.png`,
+};
 
 export default function TryOnPage() {
   const [searchParams] = useSearchParams();
@@ -39,6 +47,7 @@ export default function TryOnPage() {
   const [charOpen, setCharOpen] = useState(false);
   const [tryLoading, setTryLoading] = useState(false);
   const [tryMsg, setTryMsg] = useState('');
+  const [tryOverlay, setTryOverlay] = useState('');
   const [outfitName, setOutfitName] = useState('');
 
   const selectedList = useMemo(
@@ -49,6 +58,7 @@ export default function TryOnPage() {
   const currentClothes = items.filter((c) => c.category.major === activeMajor);
 
   const toggleWear = (item: IClothing) => {
+    setTryOverlay('');
     const major = item.category.major;
     setWornMap((prev) => {
       const cur = prev[major] ?? [];
@@ -63,6 +73,7 @@ export default function TryOnPage() {
   };
 
   const removeWorn = (item: IClothing) => {
+    setTryOverlay('');
     const major = item.category.major;
     setWornMap((prev) => ({ ...prev, [major]: (prev[major] ?? []).filter((c) => c.id !== item.id) }));
   };
@@ -74,10 +85,18 @@ export default function TryOnPage() {
     }
     setTryLoading(true);
     setTryMsg('');
+    setTryOverlay('');
     try {
       const msg = await mockTryOn(selectedList);
       setTryMsg(msg);
-      toast.success('试穿效果已生成（本地模拟）');
+      const key = selectedList.map((c) => c.id).sort().join('|');
+      const overlay = TRYON_RESULTS[key];
+      if (overlay) {
+        setTryOverlay(overlay);
+        toast.success('试穿效果已生成');
+      } else {
+        toast.success('试穿效果已生成（该搭配暂无效果图，仅文字提示）');
+      }
     } catch (e) {
       toast.error(String(e));
     } finally {
@@ -124,7 +143,7 @@ export default function TryOnPage() {
         </button>
       </header>
 
-      <BodyAvatar image={bodyImage(body.gender, body.bodyType)} loading={tryLoading} />
+      <BodyAvatar image={bodyImage(body.gender, body.bodyType)} loading={tryLoading} overlay={tryOverlay || undefined} />
 
       <div className="flex gap-2 overflow-x-auto pb-1">
         {MAJOR_ORDER.map((m) => (
