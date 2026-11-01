@@ -14,6 +14,12 @@
 - **穿搭记录**：每日打卡、近 7 天打卡量、高频单品、高频搭配与结合体型的偏好推荐。
 - **数据本地化**：所有数据保存在浏览器 localStorage（项目命名空间 `my-wardrobe`），无需登录、跨设备不共享。
 
+## 界面预览
+
+| 衣橱 | 试穿 | 记录 |
+|---|---|---|
+| ![衣橱](docs/screenshots/wardrobe.png) | ![试穿](docs/screenshots/tryon.png) | ![记录](docs/screenshots/outfit-log.png) |
+
 ## 技术栈
 
 | 类别 | 选型 |
