@@ -20,6 +20,12 @@
 |---|---|---|
 | ![衣橱](docs/screenshots/wardrobe.png) | ![试穿](docs/screenshots/tryon.png) | ![记录](docs/screenshots/outfit-log.png) |
 
+**AI 试穿效果**
+
+![AI 试穿效果](docs/screenshots/tryon-result.png)
+
+> 上图为一套「白棉T恤 + 深蓝牛仔裤 + 驼色呢大衣」搭配的 AI 试穿示意效果（本地版 AI 试穿为前端模拟，此图为生成的效果展示）。
+
 ## 技术栈
 
 | 类别 | 选型 |
